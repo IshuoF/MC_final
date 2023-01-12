@@ -4719,8 +4719,8 @@ int flag = 0;
 
 void Mode1(int time){
 int succeed = 1;
-int bg_time=time/4;
-int a;
+int distance;
+UART_Write_Text("You have entered GUARD mode. \r\n");
 char mes[10];
 UART_Write_Text("The Guardian will lock your phone for ");
 UART_Write_Text(itoa(mes, time, 10));
@@ -4730,54 +4730,44 @@ LATD=15;
 _delay((unsigned long)((1000)*(4000000/4000.0)));
 CCPR1L = 30;
 _delay((unsigned long)((2000)*(4000000/4000.0)));
-while(time > 0){
+int flag = 0;
+while(time > 0 && flag == 0){
 strcpy(str,GetString());
-if(strcmp(str,"a\r")==0){
+for(int i=0;i<20;i++){
+if(str[i]=='\r'){
+str[i] = '\0';
+if(str[0]=='p' && str[1] == 'a' && str[2] == 's' && str[3] == 's' && str[4] == 'w' && str[5] == 'o' && str[6] == 'r' && str[7] == 'd' && str[8] == '\0'){
+LATD = 0;
 succeed = 0;
+flag = 1;
+ClearBuffer();
 break;
 }
-_delay((unsigned long)((1000)*(4000000/4000.0)));
-
-
-
+else{
+UART_Write_Text("Password incorrect\r\n");
+ClearBuffer();
+}
+}
+}
+_delay((unsigned long)((990)*(4000000/4000.0)));
 time--;
-
-if(time/bg_time==2)
-{
-LATDbits.LD3=0;
-}
-else if(time/bg_time==1)
-{
-LATDbits.LD2=0;
-}
-else if(time==0)
-{
-LATDbits.LD0=0;
-}
-else if(time/bg_time==0)
-{
-LATDbits.LD1=0;
-}
-
+LATD = time % 15;
 TMR1H = 0;
 TMR1L = 0;
 RA2 = 1;
 _delay((unsigned long)((10)*(4000000/4000000.0)));
 RA2 = 0;
-
 while(!RA3);
 TMR1ON = 1;
 while(RA3);
 TMR1ON = 0;
-a = (TMR1L | (TMR1H<<8));
-a=a/58.82;
-a = a + 1;
-
-if(a<5){
-UART_Write_Text("How dare you\r\n");
+distance = (TMR1L | (TMR1H<<8));
+distance=distance/58.82;
+distance = distance + 1;
+if(distance<5){
+UART_Write_Text("How dare you. PENALTY 10 SEC. \r\n");
 time+=10;
 }
-
 }
 if (succeed){
 UART_Write_Text("Challenge Complete, your phone is unlocked\r\n");
@@ -4793,20 +4783,31 @@ return ;
 void Mode2(){
 int timer = 0;
 LATD=15;
-UART_Write_Text("You have entered the zen mode.\r\n");
+UART_Write_Text("You have entered the ZEN mode.\r\n");
 _delay((unsigned long)((1000)*(4000000/4000.0)));
 CCPR1L = 30;
 _delay((unsigned long)((2000)*(4000000/4000.0)));
-while(1){
+int flag = 0;
+while(!flag){
+LATD = 0;
 strcpy(str,GetString());
-if(strcmp(str,"password\r")==0){
+for(int i=0;i<20;i++){
+if(str[i]=='\r'){
+str[i] = '\0';
+if(str[0]=='p' && str[1] == 'a' && str[2] == 's' && str[3] == 's' && str[4] == 'w' && str[5] == 'o' && str[6] == 'r' && str[7] == 'd' && str[8] == '\0'){
 LATD=0;
+flag = 1;
 break;
+ClearBuffer();
+}
+else{
+UART_Write_Text("Password incorrect\r\n");
+ClearBuffer();
+}
+}
 }
 _delay((unsigned long)((1000)*(4000000/4000.0)));
-
-
-
+LATD = timer % 15;
 timer++;
 }
 int min = timer / 60;
@@ -4825,13 +4826,9 @@ return ;
 
 void main(void)
 {
-
-# 127
 SYSTEM_Initialize() ;
 
 int adc;
-int a;
-char tmp[10];
 TRISD = 0;
 LATD = 0;
 TRISAbits.TRISA2=0;
@@ -4839,42 +4836,32 @@ TRISAbits.TRISA3=1;
 
 T1CON = 0x10;
 
-
 while(1) {
 char intstr[10];
-
-# 151
 if (!flag){
-char mes[] = "Welcome to the Guardian\r";
-UART_Write_Text(mes);
-UART_Write('\n');
+UART_Write_Text("Welcome to the Guardian\r\n");
+UART_Write_Text("Press G to enter GUARD mode and Z to enter ZEN mode.\r\n");
 flag = 1;
-}
-
-strcpy(str,GetString());
-
-if(strcmp(str,"G\r")==0){
 ClearBuffer();
-UART_Write('\n');
+}
+strcpy(str, GetString());
+for(int i=0;i<20;i++){
+if(str[i]=='\r'){
+str[i] = '\0';
+if(str[0]=='G' && str[1] == '\0'){
+ClearBuffer();
 adc= ADC_Read(60);
 Mode1(adc);
 ClearBuffer();
 }
-else if(strcmp(str,"Z\r")==0){
+else if(str[0]=='Z' && str[1] == '\0'){
 ClearBuffer();
-UART_Write('\n');
 Mode2();
 ClearBuffer();
 }
-else if(strcmp(str,"\r")==0){
-ClearBuffer();
-UART_Write('\n');
 ClearBuffer();
 }
-
-
-
-
+}
 }
 return;
 }

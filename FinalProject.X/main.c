@@ -11,8 +11,8 @@ int flag = 0;
 
 void Mode1(int time){   // Todo : Mode1 
     int succeed = 1;
-    int bg_time=time/4;
-    int a;
+    int distance;
+    UART_Write_Text("You have entered GUARD mode. \r\n");
     char mes[10];
     UART_Write_Text("The Guardian will lock your phone for ");
     UART_Write_Text(itoa(mes, time, 10));
@@ -22,54 +22,44 @@ void Mode1(int time){   // Todo : Mode1
     __delay_ms(1000);
     CCPR1L = 30;
     __delay_ms(2000);
-    while(time > 0){
+    int flag = 0;
+    while(time > 0 && flag == 0){
         strcpy(str,GetString());
-        if(strcmp(str,"a\r")==0){
-            succeed = 0;
-            break;
+        for(int i=0;i<20;i++){
+            if(str[i]=='\r'){
+                str[i] = '\0';
+                if(str[0]=='p' && str[1] == 'a' && str[2] == 's' && str[3] == 's' && str[4] == 'w' && str[5] == 'o' && str[6] == 'r' && str[7] == 'd' && str[8] == '\0'){ // Mode1
+                    LATD = 0;
+                    succeed = 0;
+                    flag = 1;
+                    ClearBuffer();
+                    break;
+                }
+                else{
+                    UART_Write_Text("Password incorrect\r\n");
+                    ClearBuffer();
+                }
+            }
         }
-        __delay_ms(1000);
-        //char mes[50] = "One second passed. \r";
-        //UART_Write_Text(mes);
-        //UART_Write('\n');
+        __delay_ms(990);
         time--;
-        
-        if(time/bg_time==2)
-        {
-            LATDbits.LD3=0;
-        }
-        else if(time/bg_time==1)
-        {
-            LATDbits.LD2=0;
-        }
-        else if(time==0)
-        {
-            LATDbits.LD0=0;
-        }
-        else if(time/bg_time==0)
-        {
-            LATDbits.LD1=0;
-        }
-        
+        LATD = time % 15;
         TMR1H = 0;                //Sets the Initial Value of Timer
         TMR1L = 0;                //Sets the Initial Value of Timer
         RA2 = 1;                  //TRIGGER HIGH
         __delay_us(10);           //10uS Delay 
         RA2 = 0;                  //TRIGGER LOW
-        
         while(!RA3);              //Waiting for Echo
         TMR1ON = 1;               //Timer Starts
         while(RA3);               //Waiting for Echo goes LOW
         TMR1ON = 0;               //Timer Stops
-        a = (TMR1L | (TMR1H<<8)); //Reads Timer Value
-        a=a/58.82;              //Converts Time to Distance
-        a = a + 1;    
-        
-        if(a<5){
+        distance = (TMR1L | (TMR1H<<8)); //Reads Timer Value
+        distance=distance/58.82;              //Converts Time to Distance
+        distance = distance + 1;    
+        if(distance<5){
             UART_Write_Text("How dare you. PENALTY 10 SEC. \r\n");
             time+=10;
         }
-        
     }
     if (succeed){
         UART_Write_Text("Challenge Complete, your phone is unlocked\r\n");
@@ -85,20 +75,31 @@ void Mode1(int time){   // Todo : Mode1
 void Mode2(){   // Todo : Mode2 
     int timer = 0;
     LATD=15;
-    UART_Write_Text("You have entered the zen mode.\r\n");
+    UART_Write_Text("You have entered the ZEN mode.\r\n");
     __delay_ms(1000);
     CCPR1L = 30;
     __delay_ms(2000);
-    while(1){
+    int flag = 0;
+    while(!flag){
+        LATD = 0;
         strcpy(str,GetString());
-        if(strcmp(str,"password\r")==0){
-            LATD=0;
-            break;
+        for(int i=0;i<20;i++){
+            if(str[i]=='\r'){
+                str[i] = '\0';
+                if(str[0]=='p' && str[1] == 'a' && str[2] == 's' && str[3] == 's' && str[4] == 'w' && str[5] == 'o' && str[6] == 'r' && str[7] == 'd' && str[8] == '\0'){ // Mode1
+                    LATD=0;
+                    flag = 1;
+                    break;
+                    ClearBuffer();
+                }
+                else{
+                    UART_Write_Text("Password incorrect\r\n");
+                    ClearBuffer();
+                }
+            }
         }
         __delay_ms(1000);
-        //char mes[50] = "One second passed. \r";
-        //UART_Write_Text(mes);
-        //UART_Write('\n');
+        LATD = timer % 15;
         timer++;
     }
     int min = timer / 60;
@@ -117,18 +118,9 @@ void Mode2(){   // Todo : Mode2
 
 void main(void) 
 {
-    
-//    PORTD=1;
-//    TRISDbits.RD0=0;
-//    TRISDbits.RD1=0;
-//    TRISDbits.RD2=0;
-//    TRISDbits.RD3=0;
-   
     SYSTEM_Initialize() ;
-    //ADCON1=15;
+    
     int adc;
-    int a;
-    char tmp[10];
     TRISD = 0;
     LATD = 0;
     TRISAbits.TRISA2=0; // TRIG pin
@@ -136,49 +128,32 @@ void main(void)
     
     T1CON = 0x10;
     
-
     while(1) {
         char intstr[10];
-        //int adc = 10;     
-         
-        //UART_Write_Text(itoa(tmp, adc , 10));
-        //__delay_ms(1000);
-        //UART_Write('\n');
-                   //Distance Calibration
-          
-        
-        
         if (!flag){
-            char mes[] = "Welcome to the Guardian\r";
-            UART_Write_Text(mes);
-            UART_Write('\n');
+            UART_Write_Text("Welcome to the Guardian\r\n");
+            UART_Write_Text("Press G to enter GUARD mode and Z to enter ZEN mode.\r\n");
             flag = 1;
-        }
-        //strcpy(str, GetString()); // TODO : GetString() in uart.c
-        strcpy(str,GetString());
-
-        if(strcmp(str,"G\r")==0){
-            ClearBuffer();
-            UART_Write('\n');
-            adc= ADC_Read(60);
-            Mode1(adc);
             ClearBuffer();
         }
-        else if(strcmp(str,"Z\r")==0){
-            ClearBuffer();
-            UART_Write('\n');
-            Mode2();
-            ClearBuffer();
+        strcpy(str, GetString()); // TODO : GetString() in uart.c
+        for(int i=0;i<20;i++){
+            if(str[i]=='\r'){
+                str[i] = '\0';
+                if(str[0]=='G' && str[1] == '\0'){ // Mode1
+                    ClearBuffer();
+                    adc= ADC_Read(60);
+                    Mode1(adc);
+                    ClearBuffer();
+                }
+                else if(str[0]=='Z' && str[1] == '\0'){ // Mode2
+                    ClearBuffer();
+                    Mode2();
+                    ClearBuffer();
+                }
+                ClearBuffer();
+            }
         }
-        else if(strcmp(str,"\r")==0){
-            ClearBuffer();
-            UART_Write('\n');
-            ClearBuffer();
-        }
-        
-       
-        
-        
     }
     return;
 }

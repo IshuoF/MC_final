@@ -15,20 +15,9 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _strcpy `(*uc ~T0 @X0 0 ef2`*uc`*Cuc ]
 "5 setting_hardaware/uart.h
 [v _GetString `(*uc ~T0 @X0 0 ef ]
-"45 C:\Program Files\Microchip\xc8\v2.40\pic\include\c90\string.h
-[v _strcmp `(i ~T0 @X0 0 ef2`*Cuc`*Cuc ]
-"1320 C:\Program Files\Microchip\xc8\v2.40\pic\include\proc\pic18f4520.h
-[s S49 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
-[n S49 . LATD0 LATD1 LATD2 LATD3 LATD4 LATD5 LATD6 LATD7 ]
-"1330
-[s S50 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
-[n S50 . LD0 LD1 LD2 LD3 LD4 LD5 LD6 LD7 ]
-"1319
-[u S48 `S49 1 `S50 1 ]
-[n S48 . . . ]
-"1341
-[v _LATDbits `VS48 ~T0 @X0 0 e@3980 ]
-"5648
+"8
+[v _ClearBuffer `(v ~T0 @X0 0 ef ]
+"5648 C:\Program Files\Microchip\xc8\v2.40\pic\include\proc\pic18f4520.h
 [v _TMR1H `Vuc ~T0 @X0 0 e@4047 ]
 "5641
 [v _TMR1L `Vuc ~T0 @X0 0 e@4046 ]
@@ -58,10 +47,6 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _TRISAbits `VS54 ~T0 @X0 0 e@3986 ]
 "5531
 [v _T1CON `Vuc ~T0 @X0 0 e@4045 ]
-"6 setting_hardaware/uart.h
-[v _UART_Write `(v ~T0 @X0 0 ef1`uc ]
-"8
-[v _ClearBuffer `(v ~T0 @X0 0 ef ]
 "35 setting_hardaware/adc.h
 [v _ADC_Read `(i ~T0 @X0 0 ef1`i ]
 [t ~ __interrupt . k ]
@@ -3013,24 +2998,23 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 13: int succeed = 1;
 [e = _succeed -> 1 `i ]
 "14
-[v _bg_time `i ~T0 @X0 1 a ]
-[; ;main.c: 14: int bg_time=time/4;
-[e = _bg_time / _time -> 4 `i ]
+[v _distance `i ~T0 @X0 1 a ]
+[; ;main.c: 14: int distance;
+[; ;main.c: 15: UART_Write_Text("You have entered GUARD mode. \r\n");
 "15
-[v _a `i ~T0 @X0 1 a ]
+[e ( _UART_Write_Text (1 -> :s 1C `*uc ]
 "16
 [v _mes `uc ~T0 @X0 -> 10 `i a ]
-[; ;main.c: 15: int a;
 [; ;main.c: 16: char mes[10];
 [; ;main.c: 17: UART_Write_Text("The Guardian will lock your phone for ");
 "17
-[e ( _UART_Write_Text (1 -> :s 1C `*uc ]
+[e ( _UART_Write_Text (1 -> :s 2C `*uc ]
 [; ;main.c: 18: UART_Write_Text(itoa(mes, time, 10));
 "18
 [e ( _UART_Write_Text (1 ( _itoa (3 , , &U _mes _time -> 10 `i ]
 [; ;main.c: 19: UART_Write_Text(" seconds\r\n");
 "19
-[e ( _UART_Write_Text (1 -> :s 2C `*uc ]
+[e ( _UART_Write_Text (1 -> :s 3C `*uc ]
 [; ;main.c: 20: LATD=15;
 "20
 [e = _LATD -> -> 15 `i `uc ]
@@ -3043,506 +3027,537 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 24: _delay((unsigned long)((2000)*(4000000/4000.0)));
 "24
 [e ( __delay (1 -> * -> -> 2000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 25: while(time > 0){
+[v _flag `i ~T0 @X0 1 a ]
+[; ;main.c: 25: int flag = 0;
 "25
+[e = _flag -> 0 `i ]
+[; ;main.c: 26: while(time > 0 && flag == 0){
+"26
 [e $U 282  ]
 [e :U 283 ]
 {
-[; ;main.c: 26: strcpy(str,GetString());
-"26
-[e ( _strcpy (2 , &U _str -> ( _GetString ..  `*Cuc ]
-[; ;main.c: 27: if(strcmp(str,"a\r")==0){
+[; ;main.c: 27: strcpy(str,GetString());
 "27
-[e $ ! == ( _strcmp (2 , -> &U _str `*Cuc :s 3C -> 0 `i 285  ]
-{
-[; ;main.c: 28: succeed = 0;
+[e ( _strcpy (2 , &U _str -> ( _GetString ..  `*Cuc ]
+[; ;main.c: 28: for(int i=0;i<20;i++){
 "28
-[e = _succeed -> 0 `i ]
-[; ;main.c: 29: break;
-"29
-[e $U 284  ]
-"30
-}
+{
+[v _i `i ~T0 @X0 1 a ]
+[e = _i -> 0 `i ]
+[e $ < _i -> 20 `i 285  ]
+[e $U 286  ]
 [e :U 285 ]
-[; ;main.c: 30: }
-[; ;main.c: 31: _delay((unsigned long)((1000)*(4000000/4000.0)));
+{
+[; ;main.c: 29: if(str[i]=='\r'){
+"29
+[e $ ! == -> *U + &U _str * -> -> _i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 13 `ui 288  ]
+{
+[; ;main.c: 30: str[i] = '\0';
+"30
+[e = *U + &U _str * -> -> _i `ui `ux -> -> # *U &U _str `ui `ux -> -> 0 `ui `uc ]
+[; ;main.c: 31: if(str[0]=='p' && str[1] == 'a' && str[2] == 's' && str[3] == 's' && str[4] == 'w' && str[5] == 'o' && str[6] == 'r' && str[7] == 'd' && str[8] == '\0'){
 "31
-[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 35: time--;
+[e $ ! && && && && && && && && == -> *U + &U _str * -> -> -> 0 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 112 `ui == -> *U + &U _str * -> -> -> 1 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 97 `ui == -> *U + &U _str * -> -> -> 2 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 115 `ui == -> *U + &U _str * -> -> -> 3 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 115 `ui == -> *U + &U _str * -> -> -> 4 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 119 `ui == -> *U + &U _str * -> -> -> 5 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 111 `ui == -> *U + &U _str * -> -> -> 6 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 114 `ui == -> *U + &U _str * -> -> -> 7 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 100 `ui == -> *U + &U _str * -> -> -> 8 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 0 `ui 289  ]
+{
+[; ;main.c: 32: LATD = 0;
+"32
+[e = _LATD -> -> 0 `i `uc ]
+[; ;main.c: 33: succeed = 0;
+"33
+[e = _succeed -> 0 `i ]
+[; ;main.c: 34: flag = 1;
+"34
+[e = _flag -> 1 `i ]
+[; ;main.c: 35: ClearBuffer();
 "35
-[e -- _time -> 1 `i ]
-[; ;main.c: 37: if(time/bg_time==2)
+[e ( _ClearBuffer ..  ]
+[; ;main.c: 36: break;
+"36
+[e $U 286  ]
 "37
-[e $ ! == / _time _bg_time -> 2 `i 286  ]
-[; ;main.c: 38: {
+}
+[; ;main.c: 37: }
+[e $U 290  ]
 "38
-{
-[; ;main.c: 39: LATDbits.LD3=0;
-"39
-[e = . . _LATDbits 1 3 -> -> 0 `i `uc ]
-"40
-}
-[; ;main.c: 40: }
-[e $U 287  ]
-"41
-[e :U 286 ]
-[; ;main.c: 41: else if(time/bg_time==1)
-[e $ ! == / _time _bg_time -> 1 `i 288  ]
-[; ;main.c: 42: {
-"42
-{
-[; ;main.c: 43: LATDbits.LD2=0;
-"43
-[e = . . _LATDbits 1 2 -> -> 0 `i `uc ]
-"44
-}
-[; ;main.c: 44: }
-[e $U 289  ]
-"45
-[e :U 288 ]
-[; ;main.c: 45: else if(time==0)
-[e $ ! == _time -> 0 `i 290  ]
-[; ;main.c: 46: {
-"46
-{
-[; ;main.c: 47: LATDbits.LD0=0;
-"47
-[e = . . _LATDbits 1 0 -> -> 0 `i `uc ]
-"48
-}
-[; ;main.c: 48: }
-[e $U 291  ]
-"49
-[e :U 290 ]
-[; ;main.c: 49: else if(time/bg_time==0)
-[e $ ! == / _time _bg_time -> 0 `i 292  ]
-[; ;main.c: 50: {
-"50
-{
-[; ;main.c: 51: LATDbits.LD1=0;
-"51
-[e = . . _LATDbits 1 1 -> -> 0 `i `uc ]
-"52
-}
-[e :U 292 ]
-"54
-[e :U 291 ]
 [e :U 289 ]
-[e :U 287 ]
-[; ;main.c: 52: }
-[; ;main.c: 54: TMR1H = 0;
-[e = _TMR1H -> -> 0 `i `uc ]
-[; ;main.c: 55: TMR1L = 0;
-"55
-[e = _TMR1L -> -> 0 `i `uc ]
-[; ;main.c: 56: RA2 = 1;
-"56
-[e = _RA2 -> -> 1 `i `b ]
-[; ;main.c: 57: _delay((unsigned long)((10)*(4000000/4000000.0)));
-"57
-[e ( __delay (1 -> * -> -> 10 `i `d / -> -> 4000000 `l `d .4000000.0 `ul ]
-[; ;main.c: 58: RA2 = 0;
-"58
-[e = _RA2 -> -> 0 `i `b ]
-[; ;main.c: 60: while(!RA3);
-"60
-[e $U 293  ]
-[e :U 294 ]
-[e :U 293 ]
-[e $ ! _RA3 294  ]
-[e :U 295 ]
-[; ;main.c: 61: TMR1ON = 1;
-"61
-[e = _TMR1ON -> -> 1 `i `b ]
-[; ;main.c: 62: while(RA3);
-"62
-[e $U 296  ]
-[e :U 297 ]
-[e :U 296 ]
-[e $ _RA3 297  ]
-[e :U 298 ]
-[; ;main.c: 63: TMR1ON = 0;
-"63
-[e = _TMR1ON -> -> 0 `i `b ]
-[; ;main.c: 64: a = (TMR1L | (TMR1H<<8));
-"64
-[e = _a | -> _TMR1L `i << -> _TMR1H `i -> 8 `i ]
-[; ;main.c: 65: a=a/58.82;
-"65
-[e = _a -> / -> _a `d .58.82 `i ]
-[; ;main.c: 66: a = a + 1;
-"66
-[e = _a + _a -> 1 `i ]
-[; ;main.c: 68: if(a<5){
-"68
-[e $ ! < _a -> 5 `i 299  ]
+[; ;main.c: 38: else{
 {
-[; ;main.c: 69: UART_Write_Text("How dare you\r\n");
-"69
+[; ;main.c: 39: UART_Write_Text("Password incorrect\r\n");
+"39
 [e ( _UART_Write_Text (1 -> :s 4C `*uc ]
-[; ;main.c: 70: time+=10;
-"70
-[e =+ _time -> 10 `i ]
-"71
+[; ;main.c: 40: ClearBuffer();
+"40
+[e ( _ClearBuffer ..  ]
+"41
 }
-[e :U 299 ]
-"73
+[e :U 290 ]
+"42
+}
+[e :U 288 ]
+"43
+}
+"28
+[e ++ _i -> 1 `i ]
+[e $ < _i -> 20 `i 285  ]
+[e :U 286 ]
+"43
+}
+[; ;main.c: 41: }
+[; ;main.c: 42: }
+[; ;main.c: 43: }
+[; ;main.c: 44: _delay((unsigned long)((990)*(4000000/4000.0)));
+"44
+[e ( __delay (1 -> * -> -> 990 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
+[; ;main.c: 45: time--;
+"45
+[e -- _time -> 1 `i ]
+[; ;main.c: 46: LATD = time % 15;
+"46
+[e = _LATD -> % _time -> 15 `i `uc ]
+[; ;main.c: 47: TMR1H = 0;
+"47
+[e = _TMR1H -> -> 0 `i `uc ]
+[; ;main.c: 48: TMR1L = 0;
+"48
+[e = _TMR1L -> -> 0 `i `uc ]
+[; ;main.c: 49: RA2 = 1;
+"49
+[e = _RA2 -> -> 1 `i `b ]
+[; ;main.c: 50: _delay((unsigned long)((10)*(4000000/4000000.0)));
+"50
+[e ( __delay (1 -> * -> -> 10 `i `d / -> -> 4000000 `l `d .4000000.0 `ul ]
+[; ;main.c: 51: RA2 = 0;
+"51
+[e = _RA2 -> -> 0 `i `b ]
+[; ;main.c: 52: while(!RA3);
+"52
+[e $U 291  ]
+[e :U 292 ]
+[e :U 291 ]
+[e $ ! _RA3 292  ]
+[e :U 293 ]
+[; ;main.c: 53: TMR1ON = 1;
+"53
+[e = _TMR1ON -> -> 1 `i `b ]
+[; ;main.c: 54: while(RA3);
+"54
+[e $U 294  ]
+[e :U 295 ]
+[e :U 294 ]
+[e $ _RA3 295  ]
+[e :U 296 ]
+[; ;main.c: 55: TMR1ON = 0;
+"55
+[e = _TMR1ON -> -> 0 `i `b ]
+[; ;main.c: 56: distance = (TMR1L | (TMR1H<<8));
+"56
+[e = _distance | -> _TMR1L `i << -> _TMR1H `i -> 8 `i ]
+[; ;main.c: 57: distance=distance/58.82;
+"57
+[e = _distance -> / -> _distance `d .58.82 `i ]
+[; ;main.c: 58: distance = distance + 1;
+"58
+[e = _distance + _distance -> 1 `i ]
+[; ;main.c: 59: if(distance<5){
+"59
+[e $ ! < _distance -> 5 `i 297  ]
+{
+[; ;main.c: 60: UART_Write_Text("How dare you. PENALTY 10 SEC. \r\n");
+"60
+[e ( _UART_Write_Text (1 -> :s 5C `*uc ]
+[; ;main.c: 61: time+=10;
+"61
+[e =+ _time -> 10 `i ]
+"62
+}
+[e :U 297 ]
+"63
 }
 [e :U 282 ]
-"25
-[e $ > _time -> 0 `i 283  ]
+"26
+[e $ && > _time -> 0 `i == _flag -> 0 `i 283  ]
 [e :U 284 ]
-[; ;main.c: 71: }
-[; ;main.c: 73: }
-[; ;main.c: 74: if (succeed){
-"74
-[e $ ! != _succeed -> 0 `i 300  ]
+[; ;main.c: 62: }
+[; ;main.c: 63: }
+[; ;main.c: 64: if (succeed){
+"64
+[e $ ! != _succeed -> 0 `i 298  ]
 {
-[; ;main.c: 75: UART_Write_Text("Challenge Complete, your phone is unlocked\r\n");
-"75
-[e ( _UART_Write_Text (1 -> :s 5C `*uc ]
-"76
-}
-[; ;main.c: 76: }
-[e $U 301  ]
-"77
-[e :U 300 ]
-[; ;main.c: 77: else{
-{
-[; ;main.c: 78: UART_Write_Text("Unlocked, try again next time\r\n");
-"78
+[; ;main.c: 65: UART_Write_Text("Challenge Complete, your phone is unlocked\r\n");
+"65
 [e ( _UART_Write_Text (1 -> :s 6C `*uc ]
-"79
+"66
 }
-[e :U 301 ]
-[; ;main.c: 79: }
-[; ;main.c: 80: _delay((unsigned long)((1000)*(4000000/4000.0)));
-"80
+[; ;main.c: 66: }
+[e $U 299  ]
+"67
+[e :U 298 ]
+[; ;main.c: 67: else{
+{
+[; ;main.c: 68: UART_Write_Text("Unlocked, try again next time\r\n");
+"68
+[e ( _UART_Write_Text (1 -> :s 7C `*uc ]
+"69
+}
+[e :U 299 ]
+[; ;main.c: 69: }
+[; ;main.c: 70: _delay((unsigned long)((1000)*(4000000/4000.0)));
+"70
 [e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 81: CCPR1L = 90;
-"81
+[; ;main.c: 71: CCPR1L = 90;
+"71
 [e = _CCPR1L -> -> 90 `i `uc ]
-[; ;main.c: 82: _delay((unsigned long)((2000)*(4000000/4000.0)));
-"82
+[; ;main.c: 72: _delay((unsigned long)((2000)*(4000000/4000.0)));
+"72
 [e ( __delay (1 -> * -> -> 2000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 83: return ;
-"83
+[; ;main.c: 73: return ;
+"73
 [e $UE 281  ]
-[; ;main.c: 84: }
-"84
+[; ;main.c: 74: }
+"74
 [e :UE 281 ]
 }
-"85
+"75
 [v _Mode2 `(v ~T0 @X0 1 ef ]
 {
-[; ;main.c: 85: void Mode2(){
+[; ;main.c: 75: void Mode2(){
 [e :U _Mode2 ]
 [f ]
-"86
+"76
 [v _timer `i ~T0 @X0 1 a ]
-[; ;main.c: 86: int timer = 0;
+[; ;main.c: 76: int timer = 0;
 [e = _timer -> 0 `i ]
-[; ;main.c: 87: LATD=15;
-"87
+[; ;main.c: 77: LATD=15;
+"77
 [e = _LATD -> -> 15 `i `uc ]
-[; ;main.c: 88: UART_Write_Text("You have entered the zen mode.\r\n");
-"88
-[e ( _UART_Write_Text (1 -> :s 7C `*uc ]
-[; ;main.c: 89: _delay((unsigned long)((1000)*(4000000/4000.0)));
-"89
+[; ;main.c: 78: UART_Write_Text("You have entered the ZEN mode.\r\n");
+"78
+[e ( _UART_Write_Text (1 -> :s 8C `*uc ]
+[; ;main.c: 79: _delay((unsigned long)((1000)*(4000000/4000.0)));
+"79
 [e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 90: CCPR1L = 30;
-"90
+[; ;main.c: 80: CCPR1L = 30;
+"80
 [e = _CCPR1L -> -> 30 `i `uc ]
-[; ;main.c: 91: _delay((unsigned long)((2000)*(4000000/4000.0)));
-"91
+[; ;main.c: 81: _delay((unsigned long)((2000)*(4000000/4000.0)));
+"81
 [e ( __delay (1 -> * -> -> 2000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 92: while(1){
-"92
+[v _flag `i ~T0 @X0 1 a ]
+[; ;main.c: 82: int flag = 0;
+"82
+[e = _flag -> 0 `i ]
+[; ;main.c: 83: while(!flag){
+"83
+[e $U 301  ]
+[e :U 302 ]
+{
+[; ;main.c: 84: LATD = 0;
+"84
+[e = _LATD -> -> 0 `i `uc ]
+[; ;main.c: 85: strcpy(str,GetString());
+"85
+[e ( _strcpy (2 , &U _str -> ( _GetString ..  `*Cuc ]
+[; ;main.c: 86: for(int i=0;i<20;i++){
+"86
+{
+[v _i `i ~T0 @X0 1 a ]
+[e = _i -> 0 `i ]
+[e $ < _i -> 20 `i 304  ]
+[e $U 305  ]
 [e :U 304 ]
 {
-[; ;main.c: 93: strcpy(str,GetString());
-"93
-[e ( _strcpy (2 , &U _str -> ( _GetString ..  `*Cuc ]
-[; ;main.c: 94: if(strcmp(str,"password\r")==0){
-"94
-[e $ ! == ( _strcmp (2 , -> &U _str `*Cuc :s 8C -> 0 `i 306  ]
+[; ;main.c: 87: if(str[i]=='\r'){
+"87
+[e $ ! == -> *U + &U _str * -> -> _i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 13 `ui 307  ]
 {
-[; ;main.c: 95: LATD=0;
-"95
+[; ;main.c: 88: str[i] = '\0';
+"88
+[e = *U + &U _str * -> -> _i `ui `ux -> -> # *U &U _str `ui `ux -> -> 0 `ui `uc ]
+[; ;main.c: 89: if(str[0]=='p' && str[1] == 'a' && str[2] == 's' && str[3] == 's' && str[4] == 'w' && str[5] == 'o' && str[6] == 'r' && str[7] == 'd' && str[8] == '\0'){
+"89
+[e $ ! && && && && && && && && == -> *U + &U _str * -> -> -> 0 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 112 `ui == -> *U + &U _str * -> -> -> 1 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 97 `ui == -> *U + &U _str * -> -> -> 2 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 115 `ui == -> *U + &U _str * -> -> -> 3 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 115 `ui == -> *U + &U _str * -> -> -> 4 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 119 `ui == -> *U + &U _str * -> -> -> 5 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 111 `ui == -> *U + &U _str * -> -> -> 6 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 114 `ui == -> *U + &U _str * -> -> -> 7 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 100 `ui == -> *U + &U _str * -> -> -> 8 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 0 `ui 308  ]
+{
+[; ;main.c: 90: LATD=0;
+"90
 [e = _LATD -> -> 0 `i `uc ]
-[; ;main.c: 96: break;
-"96
-[e $U 305  ]
-"97
-}
-[e :U 306 ]
-[; ;main.c: 97: }
-[; ;main.c: 98: _delay((unsigned long)((1000)*(4000000/4000.0)));
-"98
-[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 102: timer++;
-"102
-[e ++ _timer -> 1 `i ]
-"103
-}
-[e :U 303 ]
+[; ;main.c: 91: flag = 1;
+"91
+[e = _flag -> 1 `i ]
+[; ;main.c: 92: break;
 "92
-[e $U 304  ]
+[e $U 305  ]
+[; ;main.c: 93: ClearBuffer();
+"93
+[e ( _ClearBuffer ..  ]
+"94
+}
+[; ;main.c: 94: }
+[e $U 309  ]
+"95
+[e :U 308 ]
+[; ;main.c: 95: else{
+{
+[; ;main.c: 96: UART_Write_Text("Password incorrect\r\n");
+"96
+[e ( _UART_Write_Text (1 -> :s 9C `*uc ]
+[; ;main.c: 97: ClearBuffer();
+"97
+[e ( _ClearBuffer ..  ]
+"98
+}
+[e :U 309 ]
+"99
+}
+[e :U 307 ]
+"100
+}
+"86
+[e ++ _i -> 1 `i ]
+[e $ < _i -> 20 `i 304  ]
 [e :U 305 ]
+"100
+}
+[; ;main.c: 98: }
+[; ;main.c: 99: }
+[; ;main.c: 100: }
+[; ;main.c: 101: _delay((unsigned long)((1000)*(4000000/4000.0)));
+"101
+[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
+[; ;main.c: 102: LATD = timer % 15;
+"102
+[e = _LATD -> % _timer -> 15 `i `uc ]
+[; ;main.c: 103: timer++;
+"103
+[e ++ _timer -> 1 `i ]
 "104
-[v _min `i ~T0 @X0 1 a ]
-[; ;main.c: 103: }
-[; ;main.c: 104: int min = timer / 60;
-[e = _min / _timer -> 60 `i ]
+}
+[e :U 301 ]
+"83
+[e $ ! != _flag -> 0 `i 302  ]
+[e :U 303 ]
 "105
-[v _sec `i ~T0 @X0 1 a ]
-[; ;main.c: 105: int sec = timer % 60;
-[e = _sec % _timer -> 60 `i ]
+[v _min `i ~T0 @X0 1 a ]
+[; ;main.c: 104: }
+[; ;main.c: 105: int min = timer / 60;
+[e = _min / _timer -> 60 `i ]
 "106
+[v _sec `i ~T0 @X0 1 a ]
+[; ;main.c: 106: int sec = timer % 60;
+[e = _sec % _timer -> 60 `i ]
+"107
 [v _m `uc ~T0 @X0 -> 50 `i a ]
 [v _s `uc ~T0 @X0 -> 50 `i a ]
-[; ;main.c: 106: char m[50], s[50];
-[; ;main.c: 107: UART_Write_Text("Box is unlocked, you lasted ");
-"107
-[e ( _UART_Write_Text (1 -> :s 9C `*uc ]
-[; ;main.c: 108: UART_Write_Text(itoa(m, min, 10));
+[; ;main.c: 107: char m[50], s[50];
+[; ;main.c: 108: UART_Write_Text("Box is unlocked, you lasted ");
 "108
-[e ( _UART_Write_Text (1 ( _itoa (3 , , &U _m _min -> 10 `i ]
-[; ;main.c: 109: UART_Write_Text(" minutes ");
-"109
 [e ( _UART_Write_Text (1 -> :s 10C `*uc ]
-[; ;main.c: 110: UART_Write_Text(itoa(s, sec, 10));
+[; ;main.c: 109: UART_Write_Text(itoa(m, min, 10));
+"109
+[e ( _UART_Write_Text (1 ( _itoa (3 , , &U _m _min -> 10 `i ]
+[; ;main.c: 110: UART_Write_Text(" minutes ");
 "110
-[e ( _UART_Write_Text (1 ( _itoa (3 , , &U _s _sec -> 10 `i ]
-[; ;main.c: 111: UART_Write_Text(" seconds\r\n");
-"111
 [e ( _UART_Write_Text (1 -> :s 11C `*uc ]
-[; ;main.c: 112: _delay((unsigned long)((1000)*(4000000/4000.0)));
+[; ;main.c: 111: UART_Write_Text(itoa(s, sec, 10));
+"111
+[e ( _UART_Write_Text (1 ( _itoa (3 , , &U _s _sec -> 10 `i ]
+[; ;main.c: 112: UART_Write_Text(" seconds\r\n");
 "112
-[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 113: CCPR1L = 90;
+[e ( _UART_Write_Text (1 -> :s 12C `*uc ]
+[; ;main.c: 113: _delay((unsigned long)((1000)*(4000000/4000.0)));
 "113
-[e = _CCPR1L -> -> 90 `i `uc ]
-[; ;main.c: 114: _delay((unsigned long)((2000)*(4000000/4000.0)));
+[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
+[; ;main.c: 114: CCPR1L = 90;
 "114
-[e ( __delay (1 -> * -> -> 2000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 115: return ;
+[e = _CCPR1L -> -> 90 `i `uc ]
+[; ;main.c: 115: _delay((unsigned long)((2000)*(4000000/4000.0)));
 "115
-[e $UE 302  ]
-[; ;main.c: 116: }
+[e ( __delay (1 -> * -> -> 2000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
+[; ;main.c: 116: return ;
 "116
-[e :UE 302 ]
+[e $UE 300  ]
+[; ;main.c: 117: }
+"117
+[e :UE 300 ]
 }
 [v $root$_main `(v ~T0 @X0 0 e ]
-"118
-[v _main `(v ~T0 @X0 1 ef ]
 "119
+[v _main `(v ~T0 @X0 1 ef ]
+"120
 {
-[; ;main.c: 118: void main(void)
-[; ;main.c: 119: {
+[; ;main.c: 119: void main(void)
+[; ;main.c: 120: {
 [e :U _main ]
 [f ]
-[; ;main.c: 127: SYSTEM_Initialize() ;
-"127
+[; ;main.c: 121: SYSTEM_Initialize() ;
+"121
 [e ( _SYSTEM_Initialize ..  ]
-"129
+"123
 [v _adc `i ~T0 @X0 1 a ]
-"130
-[v _a `i ~T0 @X0 1 a ]
-"131
-[v _tmp `uc ~T0 @X0 -> 10 `i a ]
-[; ;main.c: 129: int adc;
-[; ;main.c: 130: int a;
-[; ;main.c: 131: char tmp[10];
-[; ;main.c: 132: TRISD = 0;
-"132
+[; ;main.c: 123: int adc;
+[; ;main.c: 124: TRISD = 0;
+"124
 [e = _TRISD -> -> 0 `i `uc ]
-[; ;main.c: 133: LATD = 0;
-"133
+[; ;main.c: 125: LATD = 0;
+"125
 [e = _LATD -> -> 0 `i `uc ]
-[; ;main.c: 134: TRISAbits.TRISA2=0;
-"134
+[; ;main.c: 126: TRISAbits.TRISA2=0;
+"126
 [e = . . _TRISAbits 0 2 -> -> 0 `i `uc ]
-[; ;main.c: 135: TRISAbits.TRISA3=1;
-"135
+[; ;main.c: 127: TRISAbits.TRISA3=1;
+"127
 [e = . . _TRISAbits 0 3 -> -> 1 `i `uc ]
-[; ;main.c: 137: T1CON = 0x10;
-"137
+[; ;main.c: 129: T1CON = 0x10;
+"129
 [e = _T1CON -> -> 16 `i `uc ]
-[; ;main.c: 140: while(1) {
-"140
-[e :U 309 ]
+[; ;main.c: 131: while(1) {
+"131
+[e :U 312 ]
 {
-"141
+"132
 [v _intstr `uc ~T0 @X0 -> 10 `i a ]
-[; ;main.c: 141: char intstr[10];
-[; ;main.c: 151: if (!flag){
-"151
-[e $ ! ! != _flag -> 0 `i 311  ]
+[; ;main.c: 132: char intstr[10];
+[; ;main.c: 133: if (!flag){
+"133
+[e $ ! ! != _flag -> 0 `i 314  ]
 {
-[v F2731 `uc ~T0 @X0 -> 0 `x s ]
-[i F2731
-:U ..
--> 87 `c
--> 101 `c
--> 108 `c
--> 99 `c
--> 111 `c
--> 109 `c
--> 101 `c
--> 32 `c
--> 116 `c
--> 111 `c
--> 32 `c
--> 116 `c
--> 104 `c
--> 101 `c
--> 32 `c
--> 71 `c
--> 117 `c
--> 97 `c
--> 114 `c
--> 100 `c
--> 105 `c
--> 97 `c
--> 110 `c
--> 13 `c
--> 0 `c
-..
-]
-"152
-[v _mes `uc ~T0 @X0 25  a ]
-[; ;main.c: 152: char mes[] = "Welcome to the Guardian\r";
-[e = _mes F2731 ]
-[; ;main.c: 153: UART_Write_Text(mes);
-"153
-[e ( _UART_Write_Text (1 &U _mes ]
-[; ;main.c: 154: UART_Write('\n');
-"154
-[e ( _UART_Write (1 -> -> 10 `ui `uc ]
-[; ;main.c: 155: flag = 1;
-"155
+[; ;main.c: 134: UART_Write_Text("Welcome to the Guardian\r\n");
+"134
+[e ( _UART_Write_Text (1 -> :s 13C `*uc ]
+[; ;main.c: 135: UART_Write_Text("Press G to enter GUARD mode and Z to enter ZEN mode.\r\n");
+"135
+[e ( _UART_Write_Text (1 -> :s 14C `*uc ]
+[; ;main.c: 136: flag = 1;
+"136
 [e = _flag -> 1 `i ]
+[; ;main.c: 137: ClearBuffer();
+"137
+[e ( _ClearBuffer ..  ]
+"138
+}
+[e :U 314 ]
+[; ;main.c: 138: }
+[; ;main.c: 139: strcpy(str, GetString());
+"139
+[e ( _strcpy (2 , &U _str -> ( _GetString ..  `*Cuc ]
+[; ;main.c: 140: for(int i=0;i<20;i++){
+"140
+{
+[v _i `i ~T0 @X0 1 a ]
+[e = _i -> 0 `i ]
+[e $ < _i -> 20 `i 315  ]
+[e $U 316  ]
+[e :U 315 ]
+{
+[; ;main.c: 141: if(str[i]=='\r'){
+"141
+[e $ ! == -> *U + &U _str * -> -> _i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 13 `ui 318  ]
+{
+[; ;main.c: 142: str[i] = '\0';
+"142
+[e = *U + &U _str * -> -> _i `ui `ux -> -> # *U &U _str `ui `ux -> -> 0 `ui `uc ]
+[; ;main.c: 143: if(str[0]=='G' && str[1] == '\0'){
+"143
+[e $ ! && == -> *U + &U _str * -> -> -> 0 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 71 `ui == -> *U + &U _str * -> -> -> 1 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 0 `ui 319  ]
+{
+[; ;main.c: 144: ClearBuffer();
+"144
+[e ( _ClearBuffer ..  ]
+[; ;main.c: 145: adc= ADC_Read(60);
+"145
+[e = _adc ( _ADC_Read (1 -> 60 `i ]
+[; ;main.c: 146: Mode1(adc);
+"146
+[e ( _Mode1 (1 _adc ]
+[; ;main.c: 147: ClearBuffer();
+"147
+[e ( _ClearBuffer ..  ]
+"148
+}
+[; ;main.c: 148: }
+[e $U 320  ]
+"149
+[e :U 319 ]
+[; ;main.c: 149: else if(str[0]=='Z' && str[1] == '\0'){
+[e $ ! && == -> *U + &U _str * -> -> -> 0 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 90 `ui == -> *U + &U _str * -> -> -> 1 `i `ui `ux -> -> # *U &U _str `ui `ux `ui -> 0 `ui 321  ]
+{
+[; ;main.c: 150: ClearBuffer();
+"150
+[e ( _ClearBuffer ..  ]
+[; ;main.c: 151: Mode2();
+"151
+[e ( _Mode2 ..  ]
+[; ;main.c: 152: ClearBuffer();
+"152
+[e ( _ClearBuffer ..  ]
+"153
+}
+[e :U 321 ]
+"154
+[e :U 320 ]
+[; ;main.c: 153: }
+[; ;main.c: 154: ClearBuffer();
+[e ( _ClearBuffer ..  ]
+"155
+}
+[e :U 318 ]
 "156
 }
-[e :U 311 ]
-[; ;main.c: 156: }
-[; ;main.c: 158: strcpy(str,GetString());
-"158
-[e ( _strcpy (2 , &U _str -> ( _GetString ..  `*Cuc ]
-[; ;main.c: 160: if(strcmp(str,"G\r")==0){
-"160
-[e $ ! == ( _strcmp (2 , -> &U _str `*Cuc :s 12C -> 0 `i 312  ]
-{
-[; ;main.c: 161: ClearBuffer();
-"161
-[e ( _ClearBuffer ..  ]
-[; ;main.c: 162: UART_Write('\n');
-"162
-[e ( _UART_Write (1 -> -> 10 `ui `uc ]
-[; ;main.c: 163: adc= ADC_Read(60);
-"163
-[e = _adc ( _ADC_Read (1 -> 60 `i ]
-[; ;main.c: 164: Mode1(adc);
-"164
-[e ( _Mode1 (1 _adc ]
-[; ;main.c: 165: ClearBuffer();
-"165
-[e ( _ClearBuffer ..  ]
-"166
-}
-[; ;main.c: 166: }
-[e $U 313  ]
-"167
-[e :U 312 ]
-[; ;main.c: 167: else if(strcmp(str,"Z\r")==0){
-[e $ ! == ( _strcmp (2 , -> &U _str `*Cuc :s 13C -> 0 `i 314  ]
-{
-[; ;main.c: 168: ClearBuffer();
-"168
-[e ( _ClearBuffer ..  ]
-[; ;main.c: 169: UART_Write('\n');
-"169
-[e ( _UART_Write (1 -> -> 10 `ui `uc ]
-[; ;main.c: 170: Mode2();
-"170
-[e ( _Mode2 ..  ]
-[; ;main.c: 171: ClearBuffer();
-"171
-[e ( _ClearBuffer ..  ]
-"172
-}
-[; ;main.c: 172: }
-[e $U 315  ]
-"173
-[e :U 314 ]
-[; ;main.c: 173: else if(strcmp(str,"\r")==0){
-[e $ ! == ( _strcmp (2 , -> &U _str `*Cuc :s 14C -> 0 `i 316  ]
-{
-[; ;main.c: 174: ClearBuffer();
-"174
-[e ( _ClearBuffer ..  ]
-[; ;main.c: 175: UART_Write('\n');
-"175
-[e ( _UART_Write (1 -> -> 10 `ui `uc ]
-[; ;main.c: 176: ClearBuffer();
-"176
-[e ( _ClearBuffer ..  ]
-"177
-}
-[e :U 316 ]
-"182
-[e :U 315 ]
-[e :U 313 ]
-}
-[e :U 308 ]
 "140
-[e $U 309  ]
-[e :U 310 ]
-[; ;main.c: 177: }
-[; ;main.c: 182: }
-[; ;main.c: 183: return;
-"183
-[e $UE 307  ]
-[; ;main.c: 184: }
-"184
-[e :UE 307 ]
+[e ++ _i -> 1 `i ]
+[e $ < _i -> 20 `i 315  ]
+[e :U 316 ]
+"156
+}
+"157
+}
+[e :U 311 ]
+"131
+[e $U 312  ]
+[e :U 313 ]
+[; ;main.c: 155: }
+[; ;main.c: 156: }
+[; ;main.c: 157: }
+[; ;main.c: 158: return;
+"158
+[e $UE 310  ]
+[; ;main.c: 159: }
+"159
+[e :UE 310 ]
 }
 [v $root$_Hi_ISR `(v ~T0 @X0 0 e ]
-"186
+"161
 [v _Hi_ISR `(v ~T52 @X0 1 ef ]
-"187
+"162
 {
-[; ;main.c: 186: void __interrupt(high_priority) Hi_ISR(void)
-[; ;main.c: 187: {
+[; ;main.c: 161: void __interrupt(high_priority) Hi_ISR(void)
+[; ;main.c: 162: {
 [e :U _Hi_ISR ]
 [f ]
-"188
+"163
 [v _intstr `uc ~T0 @X0 -> 12 `i a ]
-"189
+"164
 [v _number `i ~T0 @X0 1 a ]
-[; ;main.c: 188: char intstr[12];
-[; ;main.c: 189: int number = ADC_Read(60);
+[; ;main.c: 163: char intstr[12];
+[; ;main.c: 164: int number = ADC_Read(60);
 [e = _number ( _ADC_Read (1 -> 60 `i ]
-[; ;main.c: 190: UART_Write_Text(itoa(intstr, number, 10));
-"190
+[; ;main.c: 165: UART_Write_Text(itoa(intstr, number, 10));
+"165
 [e ( _UART_Write_Text (1 ( _itoa (3 , , &U _intstr _number -> 10 `i ]
-[; ;main.c: 191: }
-"191
-[e :UE 317 ]
+[; ;main.c: 166: }
+"166
+[e :UE 322 ]
 }
-[a 10C 32 109 105 110 117 116 101 115 32 0 ]
-[a 1C 84 104 101 32 71 117 97 114 100 105 97 110 32 119 105 108 108 32 108 111 99 107 32 121 111 117 114 32 112 104 111 110 101 32 102 111 114 32 0 ]
-[a 9C 66 111 120 32 105 115 32 117 110 108 111 99 107 101 100 44 32 121 111 117 32 108 97 115 116 101 100 32 0 ]
-[a 8C 112 97 115 115 119 111 114 100 13 0 ]
-[a 3C 97 13 0 ]
-[a 13C 90 13 0 ]
-[a 12C 71 13 0 ]
-[a 14C 13 0 ]
-[a 4C 72 111 119 32 100 97 114 101 32 121 111 117 13 10 0 ]
-[a 2C 32 115 101 99 111 110 100 115 13 10 0 ]
-[a 11C 32 115 101 99 111 110 100 115 13 10 0 ]
-[a 6C 85 110 108 111 99 107 101 100 44 32 116 114 121 32 97 103 97 105 110 32 110 101 120 116 32 116 105 109 101 13 10 0 ]
-[a 5C 67 104 97 108 108 101 110 103 101 32 67 111 109 112 108 101 116 101 44 32 121 111 117 114 32 112 104 111 110 101 32 105 115 32 117 110 108 111 99 107 101 100 13 10 0 ]
-[a 7C 89 111 117 32 104 97 118 101 32 101 110 116 101 114 101 100 32 116 104 101 32 122 101 110 32 109 111 100 101 46 13 10 0 ]
+[a 11C 32 109 105 110 117 116 101 115 32 0 ]
+[a 2C 84 104 101 32 71 117 97 114 100 105 97 110 32 119 105 108 108 32 108 111 99 107 32 121 111 117 114 32 112 104 111 110 101 32 102 111 114 32 0 ]
+[a 10C 66 111 120 32 105 115 32 117 110 108 111 99 107 101 100 44 32 121 111 117 32 108 97 115 116 101 100 32 0 ]
+[a 4C 80 97 115 115 119 111 114 100 32 105 110 99 111 114 114 101 99 116 13 10 0 ]
+[a 9C 80 97 115 115 119 111 114 100 32 105 110 99 111 114 114 101 99 116 13 10 0 ]
+[a 3C 32 115 101 99 111 110 100 115 13 10 0 ]
+[a 12C 32 115 101 99 111 110 100 115 13 10 0 ]
+[a 13C 87 101 108 99 111 109 101 32 116 111 32 116 104 101 32 71 117 97 114 100 105 97 110 13 10 0 ]
+[a 7C 85 110 108 111 99 107 101 100 44 32 116 114 121 32 97 103 97 105 110 32 110 101 120 116 32 116 105 109 101 13 10 0 ]
+[a 6C 67 104 97 108 108 101 110 103 101 32 67 111 109 112 108 101 116 101 44 32 121 111 117 114 32 112 104 111 110 101 32 105 115 32 117 110 108 111 99 107 101 100 13 10 0 ]
+[a 14C 80 114 101 115 115 32 71 32 116 111 32 101 110 116 101 114 32 71 85 65 82 68 32 109 111 100 101 32 97 110 100 32 90 32 116 111 32 101 110 116 101 114 32 90 69 78 32 109 111 100 101 46 13 10 0 ]
+[a 8C 89 111 117 32 104 97 118 101 32 101 110 116 101 114 101 100 32 116 104 101 32 90 69 78 32 109 111 100 101 46 13 10 0 ]
+[a 1C 89 111 117 32 104 97 118 101 32 101 110 116 101 114 101 100 32 71 85 65 82 68 32 109 111 100 101 46 32 13 10 0 ]
+[a 5C 72 111 119 32 100 97 114 101 32 121 111 117 46 32 80 69 78 65 76 84 89 32 49 48 32 83 69 67 46 32 13 10 0 ]
